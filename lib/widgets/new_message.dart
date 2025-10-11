@@ -1,6 +1,6 @@
+import 'package:chat_app/services/push_notification_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class NewMessage extends StatefulWidget {
@@ -15,21 +15,26 @@ class _NewMessageState extends State<NewMessage> {
 
   void _submitMessage() async {
     final enteredMessage = _messageController.text;
-    if (enteredMessage.trim().isEmpty) {
-      return;
-    }
+    if (enteredMessage.trim().isEmpty) return;
     FocusScope.of(context).unfocus();
     _messageController.clear();
+
     final userData = await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
-    FirebaseFirestore.instance.collection('chat').add({
+
+    await FirebaseFirestore.instance.collection('chat').add({
       'userId': FirebaseAuth.instance.currentUser!.uid,
       'text': enteredMessage,
       'createdAt': Timestamp.now(),
       'username': userData.data()!['username'],
     });
+
+    await PushNotificationService.sendMessage(
+      enteredMessage,
+      userData.data()!['username'],
+    );
   }
 
   @override

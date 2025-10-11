@@ -1,6 +1,5 @@
 import 'package:chat_app/widgets/message_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChatMessages extends StatefulWidget {
@@ -12,8 +11,8 @@ class ChatMessages extends StatefulWidget {
 
 class _ChatMessagesState extends State<ChatMessages> {
   final ScrollController _scrollController = ScrollController();
-  bool _didJumpToBottom = false;
-  String? _lastMessageId;
+  // bool _didJumpToBottom = false;
+  // String? _lastMessageId;
 
   @override
   void dispose() {
@@ -21,27 +20,27 @@ class _ChatMessagesState extends State<ChatMessages> {
     super.dispose();
   }
 
-  void _maybeJumpToBottomAfterFrame(List<QueryDocumentSnapshot> docs) {
-    // Only jump the first time data arrives or when new messages are appended at
-    // the end. We guard with _didJumpToBottom so we don't keep forcing scroll
-    // on user interaction.
-    // Only jump if new messages have arrived (i.e., the last doc has changed).
-    if (docs.isNotEmpty) {
-      final lastId = docs.last.id;
-      if (_lastMessageId != lastId) {
-        _didJumpToBottom = false;
-        _lastMessageId = lastId;
-      }
-    }
-    if (_didJumpToBottom) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if (_scrollController.hasClients) {
-        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-      }
-      _didJumpToBottom = true;
-    });
-  }
+  // void _maybeJumpToBottomAfterFrame(List<QueryDocumentSnapshot> docs) {
+  //   // Only jump the first time data arrives or when new messages are appended at
+  //   // the end. We guard with _didJumpToBottom so we don't keep forcing scroll
+  //   // on user interaction.
+  //   // Only jump if new messages have arrived (i.e., the last doc has changed).
+  //   if (docs.isNotEmpty) {
+  //     final lastId = docs.last.id;
+  //     if (_lastMessageId != lastId) {
+  //       _didJumpToBottom = false;
+  //       _lastMessageId = lastId;
+  //     }
+  //   }
+  //   if (_didJumpToBottom) return;
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     if (!mounted) return;
+  //     if (_scrollController.hasClients) {
+  //       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+  //     }
+  //     _didJumpToBottom = true;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +63,8 @@ class _ChatMessagesState extends State<ChatMessages> {
         final chatDocs = snapshot.data!.docs;
 
         // Ensure we scroll to bottom when data first appears.
-        _maybeJumpToBottomAfterFrame(chatDocs);
+
+        //_maybeJumpToBottomAfterFrame(chatDocs);
 
         return MessageBubble(
           scrollController: _scrollController,
