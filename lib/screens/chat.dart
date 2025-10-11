@@ -1,5 +1,6 @@
 import 'package:chat_app/widgets/chat_messages.dart';
 import 'package:chat_app/widgets/new_message.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -14,16 +15,27 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   void setupPushNotifications() async {
     final fcm = FirebaseMessaging.instance;
-    await fcm.requestPermission();
-    //final token = await fcm.getToken();
+
+    // Request permission (iOS & Android 13+)
+    await fcm.requestPermission(alert: true, badge: true, sound: true);
+
+    // Subscribe to topic for chat messages
     await fcm.subscribeToTopic('chat');
+
+    // Save device token in Firestore (optional for private notifications)
+    final token = await fcm.getToken();
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    await FirebaseFirestore.instance.collection('users').doc(uid).update({
+      'fcmToken': token,
+    });
+
+    print('Subscribed to chat topic & saved token: $token');
   }
 
   @override
   void initState() {
     super.initState();
-
-    setupPushNotifications();
+    setupPushNotifications(); //topic subscription & token logic
   }
 
   @override
@@ -33,7 +45,8 @@ class _ChatScreenState extends State<ChatScreen> {
         title: Text('Flutter Chat'),
         actions: [
           IconButton(
-            onPressed: () {
+            onPressed: () async {
+              await FirebaseMessaging.instance.unsubscribeFromTopic('chat');
               FirebaseAuth.instance.signOut();
             },
             icon: Icon(

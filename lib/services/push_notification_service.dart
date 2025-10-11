@@ -4,14 +4,14 @@ import 'package:googleapis_auth/auth_io.dart' as auth;
 
 class PushNotificationService {
   static Future<void> sendMessage(String messageText, String username) async {
-    // Load the service account JSON file
+    // Load service account JSON
     final jsonString = await rootBundle.loadString(
       'assets/service-account.json',
     );
     final Map<String, dynamic> jsonMap = json.decode(jsonString);
 
     final credentials = auth.ServiceAccountCredentials.fromJson(jsonString);
-    final projectId = jsonMap['project_id'];
+    final projectId = jsonMap['project_id']; // extract project_id manually
 
     final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
     final client = await auth.clientViaServiceAccount(credentials, scopes);
