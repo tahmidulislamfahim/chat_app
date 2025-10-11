@@ -15,7 +15,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void setupPushNotifications() async {
     final fcm = FirebaseMessaging.instance;
     await fcm.requestPermission();
-    final token = await fcm.getToken();
+    //final token = await fcm.getToken();
     await fcm.subscribeToTopic('chat');
   }
 
