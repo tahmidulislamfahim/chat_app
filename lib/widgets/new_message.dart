@@ -19,13 +19,18 @@ class _NewMessageState extends State<NewMessage> {
     FocusScope.of(context).unfocus();
     _messageController.clear();
 
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      // Optionally show an error message or handle unauthenticated state
+      return;
+    }
     final userData = await FirebaseFirestore.instance
         .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .doc(currentUser.uid)
         .get();
 
     await FirebaseFirestore.instance.collection('chat').add({
-      'userId': FirebaseAuth.instance.currentUser!.uid,
+      'userId': currentUser.uid,
       'text': enteredMessage,
       'createdAt': Timestamp.now(),
       'username': userData.data()!['username'],

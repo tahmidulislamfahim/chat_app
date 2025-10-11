@@ -31,7 +31,7 @@ class _AuthScreenState extends State<AuthScreen> {
         isAuthenticating = true;
       });
       if (_isLogin) {
-        final userCredential = await _firebase.signInWithEmailAndPassword(
+        await _firebase.signInWithEmailAndPassword(
           email: _enteredEmail,
           password: _enteredPassword,
         );
@@ -46,7 +46,9 @@ class _AuthScreenState extends State<AuthScreen> {
             .set({'username': _enteredUsername, 'email': _enteredEmail});
       }
     } on FirebaseAuthException catch (error) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).clearSnackBars();
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(error.message ?? 'Authentication failed.')),
       );
@@ -87,7 +89,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         children: [
                           if (!_isLogin)
                             CircleAvatar(
-                              radius: 60, // Circle diameter will be 100
+                              radius: 60,
                               child: Icon(
                                 Icons.person,
                                 size: 100, // Make the icon bigger
@@ -122,7 +124,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             validator: (value) {
                               if (value == null ||
                                   value.trim().isEmpty ||
-                                  !value.contains('@gmail.com')) {
+                                  !value.contains('@')) {
                                 return 'Please enter a valid email address.';
                               }
                               return null;
