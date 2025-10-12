@@ -41,8 +41,9 @@ class _NewMessageState extends State<NewMessage> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).padding.bottom;
     return Padding(
-      padding: const EdgeInsets.only(left: 15, right: 1, bottom: 16),
+      padding: EdgeInsets.only(left: 15, right: 1, bottom: bottomInset + 5),
       child: Row(
         children: [
           Expanded(
@@ -61,8 +62,7 @@ class _NewMessageState extends State<NewMessage> {
               keyboardType: TextInputType.multiline,
               minLines: 1,
               maxLines: 6,
-              textInputAction:
-                  TextInputAction.newline, // Enter goes to next line
+              textInputAction: TextInputAction.newline,
             ),
           ),
           IconButton(

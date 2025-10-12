@@ -28,8 +28,6 @@ class _ChatScreenState extends State<ChatScreen> {
     await FirebaseFirestore.instance.collection('users').doc(uid).update({
       'fcmToken': token,
     });
-
-    print('Subscribed to chat topic & saved token: $token');
   }
 
   @override
@@ -41,6 +39,8 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('Flutter Chat'),
         actions: [
