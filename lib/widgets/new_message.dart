@@ -16,26 +16,23 @@ class _NewMessageState extends State<NewMessage> {
   void _submitMessage() async {
     final enteredMessage = _messageController.text;
     if (enteredMessage.trim().isEmpty) return;
+
     FocusScope.of(context).unfocus();
     _messageController.clear();
 
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) {
-      // Optionally show an error message or handle unauthenticated state
-      return;
-    }
     final userData = await FirebaseFirestore.instance
         .collection('users')
-        .doc(currentUser.uid)
+        .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
 
     await FirebaseFirestore.instance.collection('chat').add({
-      'userId': currentUser.uid,
+      'userId': FirebaseAuth.instance.currentUser!.uid,
       'text': enteredMessage,
       'createdAt': Timestamp.now(),
       'username': userData.data()!['username'],
     });
 
+    // Send notification to everyone subscribed to the topic
     await PushNotificationService.sendMessage(
       enteredMessage,
       userData.data()!['username'],
@@ -44,8 +41,9 @@ class _NewMessageState extends State<NewMessage> {
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).padding.bottom;
     return Padding(
-      padding: const EdgeInsets.only(left: 15, right: 1, bottom: 16),
+      padding: EdgeInsets.only(left: 15, right: 1, bottom: bottomInset + 5),
       child: Row(
         children: [
           Expanded(
@@ -61,6 +59,10 @@ class _NewMessageState extends State<NewMessage> {
                   ),
                 ),
               ),
+              keyboardType: TextInputType.multiline,
+              minLines: 1,
+              maxLines: 6,
+              textInputAction: TextInputAction.newline,
             ),
           ),
           IconButton(
