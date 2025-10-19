@@ -10,16 +10,20 @@ class PushNotificationService {
     );
     final Map<String, dynamic> jsonMap = json.decode(jsonString);
 
-    final credentials = auth.ServiceAccountCredentials.fromJson(jsonString);
-    final projectId = jsonMap['project_id']; // extract project_id manually
+    // Pass Map to fromJson, not String
+    final credentials = auth.ServiceAccountCredentials.fromJson(jsonMap);
+    final projectId = jsonMap['project_id'];
 
+    // Create auth client
     final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
     final client = await auth.clientViaServiceAccount(credentials, scopes);
 
+    // FCM REST API URL
     final url = Uri.parse(
       'https://fcm.googleapis.com/v1/projects/$projectId/messages:send',
     );
 
+    // Message payload
     final payload = {
       'message': {
         'topic': 'chat',
@@ -31,6 +35,7 @@ class PushNotificationService {
       },
     };
 
+    // Send the request
     await client.post(
       url,
       headers: {'Content-Type': 'application/json'},
